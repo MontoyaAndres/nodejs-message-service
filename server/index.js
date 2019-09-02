@@ -3,11 +3,15 @@ const mongoose = require("mongoose");
 const argon2 = require("argon2");
 const cors = require("cors");
 
+const app = express();
+
+// socket io config
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
+
 const { user } = require("./models/user");
 const { message: messageModel } = require("./models/message");
 const { createToken, isAuth } = require("./auth");
-
-const app = express();
 
 app
   .use(express.json())
@@ -87,4 +91,11 @@ app
 
 mongoose
   .connect("mongodb://localhost/service", { useNewUrlParser: true })
-  .then(() => app.listen(process.env.PORT || 3000));
+  .then(() => http.listen(process.env.PORT || 3000));
+
+// socket connection
+io.on("connection", socket => {
+  socket.on("send", data => {
+    io.emit("message", data);
+  });
+});

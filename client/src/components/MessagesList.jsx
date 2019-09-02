@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 
 import { getMessages, postMessages } from "../api";
+
+const socket = io("http://localhost:3000");
 
 export function MessagesList({ receiverId }) {
   const [list, setList] = useState([]);
@@ -10,7 +13,7 @@ export function MessagesList({ receiverId }) {
     e.preventDefault();
     if (message !== "") {
       postMessages({ message }, receiverId);
-      setList(list => [{ message }, ...list]);
+      socket.emit("send", { message });
       setMessage("");
     }
   }
@@ -19,6 +22,12 @@ export function MessagesList({ receiverId }) {
     getMessages(receiverId).then(({ data }) => {
       setList(data);
     });
+
+    socket.on("message", data => {
+      setList(list => [data, ...list]);
+    });
+
+    return () => socket.off();
   }, [receiverId]);
 
   return (
