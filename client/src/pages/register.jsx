@@ -6,19 +6,36 @@ function Register({ navigate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
-    register({ email, password }).finally(() => {
-      setIsLoading(false);
-      navigate("/login");
-    });
+    register({ email, password })
+      .then(({ response, error }) => {
+        if (response) {
+          navigate("/login");
+        } else {
+          setError(error);
+        }
+      })
+      .finally(() => {
+        setEmail("");
+        setPassword("");
+        setIsLoading(false);
+      });
   }
 
   return (
     <section className="section">
       <div className="container">
+        {error && (
+          <div className="notification is-danger has-text-centered">
+            <button className="delete" onClick={() => setError("")}></button>
+            {error}
+          </div>
+        )}
+
         <fieldset disabled={isLoading}>
           <form method="POST" onSubmit={handleSubmit}>
             <div className="field">

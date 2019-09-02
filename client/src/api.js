@@ -12,7 +12,9 @@ export async function login(data) {
   const response = await axios.post(`${API}/login`, data);
   const token = response.data.token;
 
-  window.localStorage.setItem("token", token);
+  if (token) {
+    window.localStorage.setItem("token", token);
+  }
 
   return response.data;
 }

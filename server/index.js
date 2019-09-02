@@ -83,8 +83,11 @@ app
 
     return response.send({ response: true, data });
   })
-  .get("/users", isAuth, async function(_, response) {
-    const data = await user.find({}, { password: 0 });
+  .get("/users", isAuth, async function(request, response) {
+    const query = await user.find({}, { password: 0 });
+    const userId = request.user;
+
+    const data = query.filter(qry => qry._id.toString() !== userId);
 
     return response.send({ response: true, data });
   });

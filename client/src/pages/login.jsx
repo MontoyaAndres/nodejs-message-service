@@ -7,20 +7,37 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const { activateAuth } = useContext(Context);
 
   function handleSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
-    login({ email, password }).finally(() => {
-      setIsLoading(false);
-      activateAuth();
-    });
+    login({ email, password })
+      .then(({ response, error }) => {
+        if (response) {
+          activateAuth();
+        } else {
+          setError(error);
+        }
+      })
+      .finally(() => {
+        setEmail("");
+        setPassword("");
+        setIsLoading(false);
+      });
   }
 
   return (
     <section className="section">
       <div className="container">
+        {error && (
+          <div className="notification is-danger has-text-centered">
+            <button className="delete" onClick={() => setError("")}></button>
+            {error}
+          </div>
+        )}
+
         <fieldset disabled={isLoading}>
           <form method="POST" onSubmit={handleSubmit}>
             <div className="field">

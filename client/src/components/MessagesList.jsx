@@ -19,9 +19,11 @@ export function MessagesList({ receiverId }) {
   }
 
   useEffect(() => {
-    getMessages(receiverId).then(({ data }) => {
-      setList(data);
-    });
+    if (receiverId) {
+      getMessages(receiverId).then(({ data }) => {
+        setList(data);
+      });
+    }
 
     socket.on("message", data => {
       setList(list => [data, ...list]);
