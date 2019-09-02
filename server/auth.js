@@ -19,8 +19,9 @@ async function isAuth(request, _, next) {
   if (!token) {
     return next(new Error("missing authorization header"));
   }
+
   try {
-    data = verify(token, TOKEN_SECRET);
+    data = verify(JSON.parse(token), TOKEN_SECRET);
   } catch {
     return next(new Error("missing authorization header"));
   }
